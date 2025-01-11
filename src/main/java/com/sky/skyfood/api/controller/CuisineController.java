@@ -1,0 +1,76 @@
+package com.sky.skyfood.api.controller;
+
+import com.sky.skyfood.domain.entity.Cuisine;
+import com.sky.skyfood.domain.exception.CuisineInUseException;
+import com.sky.skyfood.domain.exception.EntityNotFoundException;
+import com.sky.skyfood.domain.repository.CuisineRepository;
+import com.sky.skyfood.domain.service.CuisineService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/cuisines")
+public class CuisineController {
+
+    @Autowired
+    private CuisineRepository cuisineRepository;
+
+    @Autowired
+    private CuisineService cuisineService;
+
+    @GetMapping
+    public List<Cuisine> list() {
+        return cuisineRepository.all();
+    }
+
+    @GetMapping(value = "/{cuisineId}")
+    public ResponseEntity<Cuisine> get(@PathVariable Long cuisineId) {
+        Cuisine cuisine = cuisineRepository.getById(cuisineId);
+
+        if (cuisine != null) {
+            return ResponseEntity.ok(cuisine);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Cuisine add(@RequestBody Cuisine c) {
+        return cuisineRepository.add(c);
+    }
+
+    @PutMapping(value = "/{cuisineId}")
+    public ResponseEntity<Cuisine> update(@PathVariable Long cuisineId, @RequestBody Cuisine c) {
+        Cuisine cuisine = cuisineRepository.getById(cuisineId);
+
+        if (cuisine != null) {
+            cuisine.setName(c.getName());
+
+            cuisine = cuisineRepository.add(cuisine);
+
+            return ResponseEntity.ok(cuisine);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping(value = "/{cuisineId}")
+    public ResponseEntity<Cuisine> remove(@PathVariable Long cuisineId) {
+        try {
+            cuisineService.remove(cuisineId);
+            return ResponseEntity.noContent().build();
+
+        } catch (CuisineInUseException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+}
