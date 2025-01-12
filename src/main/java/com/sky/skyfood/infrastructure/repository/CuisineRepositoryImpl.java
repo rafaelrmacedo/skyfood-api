@@ -2,6 +2,7 @@ package com.sky.skyfood.infrastructure.repository;
 
 import com.sky.skyfood.domain.entity.Cuisine;
 import com.sky.skyfood.domain.repository.CuisineRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -34,6 +35,12 @@ public class CuisineRepositoryImpl implements CuisineRepository {
     @Override
     @Transactional
     public void remove(Long id) {
+        Cuisine cuisine = getById(id);
+
+        if (cuisine == null) {
+            throw new EmptyResultDataAccessException(1); // passando a quantidade esperada que é 1
+        }
+
         entityManager.remove(id);
     }
 }

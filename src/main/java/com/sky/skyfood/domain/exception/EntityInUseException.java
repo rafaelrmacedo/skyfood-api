@@ -2,12 +2,12 @@ package com.sky.skyfood.domain.exception;
 
 import java.io.Serial;
 
-public class CuisineInUseException extends RuntimeException {
+public class EntityInUseException extends RuntimeException {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public CuisineInUseException(String message) {
+    public EntityInUseException(String message) {
         super(message);
     }
 }

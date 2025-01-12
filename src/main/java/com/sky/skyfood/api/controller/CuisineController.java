@@ -1,12 +1,11 @@
 package com.sky.skyfood.api.controller;
 
 import com.sky.skyfood.domain.entity.Cuisine;
-import com.sky.skyfood.domain.exception.CuisineInUseException;
+import com.sky.skyfood.domain.exception.EntityInUseException;
 import com.sky.skyfood.domain.exception.EntityNotFoundException;
 import com.sky.skyfood.domain.repository.CuisineRepository;
 import com.sky.skyfood.domain.service.CuisineService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,7 +65,7 @@ public class CuisineController {
             cuisineService.remove(cuisineId);
             return ResponseEntity.noContent().build();
 
-        } catch (CuisineInUseException e) {
+        } catch (EntityInUseException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
         } catch (EntityNotFoundException e) {
