@@ -46,12 +46,12 @@ public class CuisineController {
 
     @PutMapping(value = "/{cuisineId}")
     public ResponseEntity<Cuisine> update(@PathVariable Long cuisineId, @RequestBody Cuisine c) {
-        Cuisine cuisine = cuisineRepository.getById(cuisineId);
+        Cuisine cuisine = cuisineRepository.getById(cuisineId); // para casos de apenas busca, é ok chamar o repo
 
         if (cuisine != null) {
             cuisine.setName(c.getName());
 
-            cuisine = cuisineRepository.add(cuisine);
+            cuisine = cuisineService.add(cuisine);
 
             return ResponseEntity.ok(cuisine);
         }

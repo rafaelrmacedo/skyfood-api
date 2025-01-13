@@ -35,8 +35,8 @@ public class CityRepositoryImpl implements CityRepository {
 
     @Override
     @Transactional
-    public void remove(City city) {
-        city = getById(city.getId());
+    public void remove(Long id) {
+        City city = getById(id);
         entityManager.remove(city);
     }
 }

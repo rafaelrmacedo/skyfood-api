@@ -3,12 +3,15 @@ package com.sky.skyfood.infrastructure.repository;
 import com.sky.skyfood.domain.entity.Cuisine;
 import com.sky.skyfood.domain.entity.Restaurant;
 import com.sky.skyfood.domain.repository.RestaurantRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
 
+@Component
 public class RestaurantRepositoryImpl implements RestaurantRepository {
 
     @PersistenceContext
@@ -32,8 +35,13 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
 
     @Override
     @Transactional
-    public void remove(Restaurant restaurant) {
-        restaurant = getById(restaurant.getId());
+    public void remove(Long id) {
+        Restaurant restaurant = getById(id);
+
+        if (restaurant == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
         entityManager.remove(restaurant);
     }
 }

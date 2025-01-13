@@ -41,6 +41,6 @@ public class CuisineRepositoryImpl implements CuisineRepository {
             throw new EmptyResultDataAccessException(1); // passando a quantidade esperada que é 1
         }
 
-        entityManager.remove(id);
+        entityManager.remove(cuisine);
     }
 }
