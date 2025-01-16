@@ -1,6 +1,8 @@
 package com.sky.skyfood.api.controller;
 
 import com.sky.skyfood.domain.entity.Cuisine;
+import com.sky.skyfood.domain.entity.Restaurant;
+import com.sky.skyfood.domain.entity.State;
 import com.sky.skyfood.domain.exception.EntityInUseException;
 import com.sky.skyfood.domain.exception.EntityNotFoundException;
 import com.sky.skyfood.domain.repository.CuisineRepository;
@@ -8,9 +10,12 @@ import com.sky.skyfood.domain.service.CuisineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/cuisines")
@@ -28,7 +33,7 @@ public class CuisineController {
     }
 
     @GetMapping(value = "/{cuisineId}")
-    public ResponseEntity<Cuisine> get(@PathVariable Long cuisineId) {
+    public ResponseEntity<Cuisine> getById(@PathVariable Long cuisineId) {
         Cuisine cuisine = cuisineRepository.getById(cuisineId);
 
         if (cuisine != null) {
@@ -72,4 +77,6 @@ public class CuisineController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.sky.skyfood.api.controller;
 
 import com.sky.skyfood.domain.entity.City;
+import com.sky.skyfood.domain.exception.EntityInUseException;
 import com.sky.skyfood.domain.exception.EntityNotFoundException;
 import com.sky.skyfood.domain.repository.CityRepository;
 import com.sky.skyfood.domain.service.CityService;
@@ -68,6 +69,18 @@ public class CityController {
             return ResponseEntity.notFound().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping(value = "/{cityId}")
+    public ResponseEntity<?> remove(@PathVariable Long cityId) {
+        try {
+            cityService.remove(cityId);
+            return ResponseEntity.ok().build();
+        } catch (EntityInUseException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }
