@@ -16,12 +16,12 @@ public class CuisineService {
     private CuisineRepository cuisineRepository;
 
     public Cuisine add(Cuisine cuisine) {
-        return cuisineRepository.add(cuisine);
+        return cuisineRepository.save(cuisine);
     }
 
     public void remove (Long id) {
         try {
-            cuisineRepository.remove(id);
+            cuisineRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new EntityInUseException("The cuisine can't be removed, because it's in use");
         } catch (EmptyResultDataAccessException e) {

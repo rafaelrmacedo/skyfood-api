@@ -11,6 +11,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class RestaurantService {
 
@@ -20,14 +22,11 @@ public class RestaurantService {
     @Autowired
     private CuisineRepository cuisineRepository;
 
-    public Restaurant add(Restaurant restaurant) {
+    public Restaurant save(Restaurant restaurant) {
         Long cuisineId = restaurant.getCuisine().getId();
 
-        Cuisine cuisine = cuisineRepository.getById(cuisineId);
-
-        if (cuisine == null) {
-            throw new EntityNotFoundException("Cuisine not found");
-        }
+        Cuisine cuisine = cuisineRepository.findById(cuisineId)
+                .orElseThrow(() -> new EntityNotFoundException("Cuisine not found"));
 
         restaurant.setCuisine(cuisine);
 

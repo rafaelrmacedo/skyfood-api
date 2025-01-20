@@ -7,6 +7,7 @@ import com.sky.skyfood.domain.exception.EntityInUseException;
 import com.sky.skyfood.domain.exception.EntityNotFoundException;
 import com.sky.skyfood.domain.repository.CuisineRepository;
 import com.sky.skyfood.domain.service.CuisineService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cuisines")
@@ -29,36 +31,40 @@ public class CuisineController {
 
     @GetMapping
     public List<Cuisine> list() {
-        return cuisineRepository.all();
+        return cuisineRepository.findAll();
     }
 
     @GetMapping(value = "/{cuisineId}")
     public ResponseEntity<Cuisine> getById(@PathVariable Long cuisineId) {
-        Cuisine cuisine = cuisineRepository.getById(cuisineId);
+        Optional<Cuisine> cuisine = cuisineRepository.findById(cuisineId);
 
-        if (cuisine != null) {
-            return ResponseEntity.ok(cuisine);
+        /*
+        * if (cuisine.isPresent()) {
+            return ResponseEntity.ok(cuisine.get());
         }
 
         return ResponseEntity.notFound().build();
+        * */
+
+        return cuisine.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Cuisine add(@RequestBody Cuisine c) {
-        return cuisineRepository.add(c);
+        return cuisineRepository.save(c);
     }
 
     @PutMapping(value = "/{cuisineId}")
     public ResponseEntity<Cuisine> update(@PathVariable Long cuisineId, @RequestBody Cuisine c) {
-        Cuisine cuisine = cuisineRepository.getById(cuisineId); // para casos de apenas busca, é ok chamar o repo
+        Optional<Cuisine> cuisine = cuisineRepository.findById(cuisineId);
 
-        if (cuisine != null) {
-            cuisine.setName(c.getName());
+        if (cuisine.isPresent()) {
+            BeanUtils.copyProperties(c, cuisine.get(), "id");
 
-            cuisine = cuisineService.add(cuisine);
-
-            return ResponseEntity.ok(cuisine);
+            Cuisine savedCuisine = cuisineRepository.save(cuisine.get());
+            return ResponseEntity.ok(savedCuisine);
         }
 
         return ResponseEntity.notFound().build();
