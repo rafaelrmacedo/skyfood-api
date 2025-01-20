@@ -94,15 +94,15 @@ public class RestaurantController {
 
     private void merge(Map<String, Object> fields, Restaurant currentyRestaurant) {
         ObjectMapper objectMapper = new ObjectMapper();
-        Restaurant originalRestaurant = objectMapper.convertValue(fields, Restaurant.class);
+        Restaurant originRestaurant = objectMapper.convertValue(fields, Restaurant.class);
 
         fields.forEach((key, value) -> {
             Field field = ReflectionUtils.findField(Restaurant.class, key);
             field.setAccessible(true); // torna os campos da entidade acessiveis
 
-            System.out.println(key + ":" + value);
+            Object newValue = ReflectionUtils.getField(field, originRestaurant);
 
-            ReflectionUtils.setField(field, currentyRestaurant, value);
+            ReflectionUtils.setField(field, currentyRestaurant, newValue);
         });
     }
 }
