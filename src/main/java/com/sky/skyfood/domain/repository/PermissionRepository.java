@@ -1,14 +1,8 @@
 package com.sky.skyfood.domain.repository;
 
-import com.sky.skyfood.domain.entity.Cuisine;
+import com.sky.skyfood.domain.entity.Permission;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
-public interface PermissionRepository {
-
-    List<Cuisine> all();
-    Cuisine getById(Long id);
-    Cuisine add(Cuisine cuisine);
-    void remove(Cuisine cuisine);
+public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
 }

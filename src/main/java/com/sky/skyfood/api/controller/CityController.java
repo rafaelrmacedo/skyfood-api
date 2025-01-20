@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cities")
@@ -25,25 +26,21 @@ public class CityController {
 
     @GetMapping
     public List<City> getAllCities() {
-        return cityRepository.all();
+        return cityRepository.findAll();
     }
 
     @GetMapping(value = "/{cityId}")
     public ResponseEntity<City> getCity(@PathVariable Long cityId) {
-        City city = cityRepository.getById(cityId);
+        Optional<City> city = cityRepository.findById(cityId);
 
-        if (city != null) {
-            return ResponseEntity.ok(city);
-        }
-
-        return ResponseEntity.notFound().build();
+        return city.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
+    // utilização do ? significa que podemos retornar qualquer tipo dentro do response entity
     public ResponseEntity<?> add(@RequestBody City c) {
-        // utilização do ? significa que podemos retornar qualquer tipo dentro do response entity
         try {
-            City city = cityService.add(c);
+            City city = cityService.save(c);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(city);
 
@@ -55,15 +52,15 @@ public class CityController {
     @PutMapping(value = "/{cityId}")
     public ResponseEntity<?> update(@PathVariable Long cityId, @RequestBody City city) {
         try {
-            City currentCity = cityRepository.getById(cityId);
+            Optional<City> currentCity = cityRepository.findById(cityId);
 
-            if (city != null) {
+            if (currentCity.isPresent()) {
 
-                BeanUtils.copyProperties(city, currentCity, "id");
+                BeanUtils.copyProperties(city, currentCity.get(), "id");
 
-                currentCity = cityService.add(currentCity);
+                City savedCity = cityService.save(city);
 
-                return ResponseEntity.ok(currentCity);
+                return ResponseEntity.ok(savedCity);
             }
 
             return ResponseEntity.notFound().build();
@@ -75,7 +72,7 @@ public class CityController {
     @DeleteMapping(value = "/{cityId}")
     public ResponseEntity<?> remove(@PathVariable Long cityId) {
         try {
-            cityService.remove(cityId);
+            cityService.deleteById(cityId);
             return ResponseEntity.ok().build();
         } catch (EntityInUseException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());

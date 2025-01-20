@@ -52,8 +52,8 @@ public class CuisineController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Cuisine add(@RequestBody Cuisine c) {
-        return cuisineRepository.save(c);
+    public Cuisine save(@RequestBody Cuisine c) {
+        return cuisineService.save(c);
     }
 
     @PutMapping(value = "/{cuisineId}")
@@ -71,7 +71,7 @@ public class CuisineController {
     }
 
     @DeleteMapping(value = "/{cuisineId}")
-    public ResponseEntity<Cuisine> remove(@PathVariable Long cuisineId) {
+    public ResponseEntity<?> remove(@PathVariable Long cuisineId) {
         try {
             cuisineService.remove(cuisineId);
             return ResponseEntity.noContent().build();
@@ -80,7 +80,7 @@ public class CuisineController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 

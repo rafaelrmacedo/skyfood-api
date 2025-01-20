@@ -1,14 +1,10 @@
 package com.sky.skyfood.domain.repository;
 
 import com.sky.skyfood.domain.entity.State;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-public interface StateRepository {
-
-    List<State> all();
-    State getById(Long id);
-    State add(State state);
-    void remove(Long id);
+@Repository
+public interface StateRepository extends JpaRepository<State, Long> {
 
 }

@@ -15,7 +15,7 @@ public class CuisineService {
     @Autowired
     private CuisineRepository cuisineRepository;
 
-    public Cuisine add(Cuisine cuisine) {
+    public Cuisine save(Cuisine cuisine) {
         return cuisineRepository.save(cuisine);
     }
 

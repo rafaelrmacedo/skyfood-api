@@ -15,13 +15,13 @@ public class CityService {
     @Autowired
     private CityRepository cityRepository;
 
-    public City add(City city) {
-        return cityRepository.add(city);
+    public City save(City city) {
+        return cityRepository.save(city);
     }
 
-    public void remove (Long id) {
+    public void deleteById(Long id) {
         try {
-            cityRepository.remove(id);
+            cityRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new EntityInUseException("The cuisine can't be removed, because it's in use");
         } catch (EmptyResultDataAccessException e) {

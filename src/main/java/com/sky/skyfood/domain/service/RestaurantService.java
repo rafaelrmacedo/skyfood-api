@@ -30,12 +30,12 @@ public class RestaurantService {
 
         restaurant.setCuisine(cuisine);
 
-        return restaurantRepository.add(restaurant);
+        return restaurantRepository.save(restaurant);
     }
 
-    public void remove(Long id) {
+    public void deleteById(Long id) {
         try {
-            restaurantRepository.remove(id);
+            restaurantRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new EntityInUseException("The cuisine can't be removed, because it's in use");
         } catch (EmptyResultDataAccessException e) {

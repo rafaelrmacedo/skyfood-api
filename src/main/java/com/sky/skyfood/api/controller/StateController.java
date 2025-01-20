@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/states")
@@ -27,37 +28,33 @@ public class StateController {
     private StateService stateService;
 
     @GetMapping
-    public List<State> getAllStates() {
-        return stateRepository.all();
+    public List<State> getAll() {
+        return stateRepository.findAll();
     }
 
     @GetMapping(value = "/{stateId}")
     public ResponseEntity<State> getById(@PathVariable Long stateId) {
-        State state = stateRepository.getById(stateId);
+        Optional<State> state = stateRepository.findById(stateId);
 
-        if (state != null) {
-            return ResponseEntity.ok(state);
-        }
-
-        return ResponseEntity.badRequest().build();
+        return state.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public State add(@RequestBody State state) {
-        return stateService.add(state);
+        return stateService.save(state);
     }
 
     @PutMapping(value = "/{stateId}")
     public ResponseEntity<?> update(@PathVariable Long stateId, @RequestBody State state) {
-        State currentyState = stateRepository.getById(stateId);
+        Optional<State> currentyState = stateRepository.findById(stateId);
 
-        if (currentyState != null) {
+        if (currentyState.isPresent()) {
             BeanUtils.copyProperties(state, currentyState, "id");
 
-            currentyState = stateService.add(currentyState);
+            State savedState = stateService.save(currentyState.get());
 
-            return ResponseEntity.ok(currentyState);
+            return ResponseEntity.ok(savedState);
         }
 
         return ResponseEntity.badRequest().build();
@@ -66,7 +63,7 @@ public class StateController {
     @DeleteMapping(value = "/{stateId}")
     public ResponseEntity<?> remove(@PathVariable Long stateId) {
         try {
-            stateService.remove(stateId);
+            stateService.deleteById(stateId);
             return ResponseEntity.ok().build();
         } catch (EntityInUseException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -78,15 +75,15 @@ public class StateController {
     @PatchMapping(value = "/{stateId}")
     public ResponseEntity<?> partialUpdate(@PathVariable Long stateId,
                                            @RequestBody Map<String, Object> fields) {
-        State currentyState = stateRepository.getById(stateId);
+        Optional<State> currentyState = stateRepository.findById(stateId);
 
-        if (currentyState == null) {
+        if (currentyState.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        merge(fields, currentyState);
+        merge(fields, currentyState.get());
 
-        return update(stateId, currentyState);
+        return update(stateId, currentyState.get());
     }
 
     private void merge(Map<String, Object> fields, State currentyState) {

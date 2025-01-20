@@ -15,13 +15,13 @@ public class StateService {
     @Autowired
     private StateRepository stateRepository;
 
-    public State add(State state) {
-        return stateRepository.add(state);
+    public State save(State state) {
+        return stateRepository.save(state);
     }
 
-    public void remove (Long id) {
+    public void deleteById (Long id) {
         try {
-            stateRepository.remove(id);
+            stateRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new EntityInUseException("The state can't be removed, because it's in use");
         } catch (EmptyResultDataAccessException e) {
