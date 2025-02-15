@@ -22,6 +22,6 @@ public class Group {
 
     @ManyToMany
     @JoinTable(name = "group_permission", joinColumns = @JoinColumn(name = "group_id"),
-    inverseJoinColumns = @JoinColumn(name = "permisson_id"))
+    inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<Permission> permissions = new ArrayList<>();
 }
